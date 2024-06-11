@@ -4,8 +4,18 @@ from PIL import Image, ImageEnhance
 import pytesseract
 import cv2
 import os
+import numpy as np
 
-def preprocess_image(image_path):
+def preprocess_image(image_path: str) -> np.ndarray:
+    """
+    Preprocess the input image to enhance it for text recognition.
+
+    Parameters:
+    image_path (str): The file path to the image to be preprocessed.
+
+    Returns:
+    np.ndarray: The preprocessed image as a binary image.
+    """
     # Brighten the image
     preprocessed_image_path = "tmp.png"
     img = Image.open(image_path)
@@ -31,7 +41,17 @@ def preprocess_image(image_path):
 
     return thresholded_image
 
-def extract_text_from_image(image_path, lang='rus'):
+def extract_text_from_image(image_path: str, lang: str = 'rus') -> str:
+    """
+    Extract text from the input image using Tesseract OCR.
+
+    Parameters:
+    image_path (str): The file path to the image from which text needs to be extracted.
+    lang (str): The language code to be used by Tesseract OCR. Default is 'rus' (Russian).
+
+    Returns:
+    str: The extracted text from the image.
+    """
     preprocessed_image = preprocess_image(image_path)
     custom_config = r'--oem 3 --psm 6'
     return pytesseract.image_to_string(preprocessed_image, lang=lang, config=custom_config)
