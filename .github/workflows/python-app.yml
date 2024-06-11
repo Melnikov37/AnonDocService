@@ -26,7 +26,7 @@ jobs:
         pip install --upgrade pip
         pip install -r project/requirements.txt
         pip install --force git+https://github.com/pydantic/pydantic.git@464ed49b1f813103a49116476bec75a94492b338
-        python -m spacy download ru_core_news_sm
+        python -m spacy download ru_core_news_lg
         
     - name: Lint with pylint
       run: |
@@ -67,7 +67,7 @@ jobs:
           pip3 install -r project/requirements.txt
           pip3 install --force git+https://github.com/pydantic/pydantic.git@464ed49b1f813103a49116476bec75a94492b338
           pip3 install gunicorn
-          python3 -m spacy download ru_core_news_sm
+          python3 -m spacy download ru_core_news_lg
           sudo systemctl restart app.service
         EOF
 
