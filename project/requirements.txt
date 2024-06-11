@@ -3,6 +3,7 @@ pytesseract
 Pillow
 PyMuPDF
 spacy
+opencv-python
 presidio_analyzer
 analyzer
 opencv-python
