@@ -3,3 +3,4 @@ pytesseract
 Pillow
 PyMuPDF
 spacy
+opencv-python
