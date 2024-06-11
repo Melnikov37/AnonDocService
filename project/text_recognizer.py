@@ -3,7 +3,6 @@
 from PIL import Image, ImageEnhance
 import pytesseract
 import cv2
-import numpy as np
 import os
 
 def preprocess_image(image_path):
@@ -33,6 +32,6 @@ def preprocess_image(image_path):
     return thresholded_image
 
 def extract_text_from_image(image_path, lang='rus'):
-  preprocessed_image = preprocess_image(image_path)
-  custom_config = r'--oem 3 --psm 6'
-  return pytesseract.image_to_string(preprocessed_image, lang=lang, config=custom_config)
+    preprocessed_image = preprocess_image(image_path)
+    custom_config = r'--oem 3 --psm 6'
+    return pytesseract.image_to_string(preprocessed_image, lang=lang, config=custom_config)
