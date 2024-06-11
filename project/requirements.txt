@@ -5,3 +5,4 @@ PyMuPDF
 spacy
 presidio_analyzer
 analyzer
+opencv-python
