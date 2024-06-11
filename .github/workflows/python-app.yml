@@ -47,7 +47,7 @@ jobs:
     steps:
     - name: Create SSH key file
       run: |
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > key.pem
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > GitHub.pem
         chmod 600 GitHub.pem
 
     - name: Copy files to server
