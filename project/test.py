@@ -13,4 +13,3 @@ with open(file_path, 'rb') as f:
     response = requests.post(url, files=files)
 
 print(response.text)
-

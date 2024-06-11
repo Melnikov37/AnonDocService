@@ -1,13 +1,16 @@
-import spacy
+"""Module to anonymize personal data using Presidio Analyzer."""
+
 from presidio_analyzer import AnalyzerEngine
 from presidio_analyzer.nlp_engine import NlpEngineProvider
 
+def initialize_analyzer():
+    """
+    Initialize analyzer engine.
 
-def load_nlp_model():
-    return spacy.load("ru_core_news_lg")
+    Returns:
+      str: Analyzer engine.
+    """
 
-
-def initialize_analyzer(nlp):
     configuration = {
         "nlp_engine_name": "spacy",
         "models": [{"lang_code": "ru", "model_name": "ru_core_news_lg"}]
@@ -17,21 +20,21 @@ def initialize_analyzer(nlp):
     return AnalyzerEngine(nlp_engine=nlp_engine, supported_languages=['ru'])
 
 
-def normalize_spaces(input):
+def normalize_spaces(text):
     """
     Normalize the input text by removing extra spaces.
 
     Args:
-      input (str): The input text to normalize.
+        input (str): The input text to normalize.
 
     Returns:
-      str: The normalized text.
+        str: The normalized text.
     """
 
-    if not isinstance(input, str):
+    if not isinstance(text, str):
         raise ValueError("Input must be a string")
 
-    return ' '.join(input.split())
+    return ' '.join(text.split())
 
 
 def find_personal_data(text, analyzer):
@@ -54,7 +57,7 @@ def find_personal_data(text, analyzer):
             raise ValueError("Text is empty after preprocessing")
         result = analyzer.analyze(text=text, language='ru')
         found_entities = [text[obj.to_dict()['start']:obj.to_dict()['end']] for obj in result]
-    except Exception as e:
+    except ValueError as e:
         print(f"Error occurred while processing text: {e}")
         return []
 

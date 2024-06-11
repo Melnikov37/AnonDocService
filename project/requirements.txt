@@ -3,3 +3,5 @@ pytesseract
 Pillow
 PyMuPDF
 spacy
+presidio_analyzer
+analyzer
