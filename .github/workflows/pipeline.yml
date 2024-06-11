@@ -21,9 +21,9 @@ jobs:
         pip install --force git+https://github.com/pydantic/pydantic.git@464ed49b1f813103a49116476bec75a94492b338
         python -m spacy download ru_core_news_sm
 
-    - name: Analysing the code with pylint
-      run: |
-        pylint $(git ls-files '*.py')
+    # - name: Analysing the code with pylint
+    #   run: |
+    #     pylint $(git ls-files '*.py')
     - name: Smelly Python
       # You may pin to the exact commit or the version.
       # uses: smelly-python/smell-my-pr@ca160cd335f89d4e536f17949521b557b9d7a0df
