@@ -55,3 +55,18 @@ def extract_text_from_image(image_path: str, lang: str = 'rus') -> str:
     preprocessed_image = preprocess_image(image_path)
     custom_config = r'--oem 3 --psm 6'
     return pytesseract.image_to_string(preprocessed_image, lang=lang, config=custom_config)
+
+def extract_data_from_image(image_path: str, lang: str = 'rus') -> str:
+    """
+    Extract text from the input image using Tesseract OCR.
+
+    Parameters:
+    image_path (str): The file path to the image from which text needs to be extracted.
+    lang (str): The language code to be used by Tesseract OCR. Default is 'rus' (Russian).
+
+    Returns:
+    str: The extracted text from the image.
+    """
+    preprocessed_image = preprocess_image(image_path)
+    custom_config = r'--oem 3 --psm 6'
+    return pytesseract.image_to_data(preprocessed_image, lang=lang, config=custom_config, output_type=pytesseract.Output.DICT)
