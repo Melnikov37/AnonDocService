@@ -58,7 +58,9 @@ jobs:
         python -m venv env
         source env/bin/activate
         pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install -r project/requirements.txt
+        pip install --force git+https://github.com/pydantic/pydantic.git@464ed49b1f813103a49116476bec75a94492b338
+        python -m spacy download ru_core_news_sm
 
     - name: Create SSH key file
       run: |
