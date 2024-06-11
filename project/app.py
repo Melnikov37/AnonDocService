@@ -1,18 +1,19 @@
+""" Flask application to upload and anonymize documents containing personal data. """
+
+import os
 from flask import Flask, request, send_file
 from werkzeug.utils import secure_filename
-import os
 import pytesseract
 from PIL import Image
 import fitz  # PyMuPDF
-import re
 import spacy
-from personal_data_anonymizer import find_personal_data
+import personal_data_anonymizer
 
-# Настройка директорий для загрузки и анонимизации файлов
+# Directory setup for file uploads and anonymized results
 UPLOAD_FOLDER = 'uploads/'
 ANONYMIZED_FOLDER = 'anonymized/'
 
-# Создание директорий, если они не существуют
+# Create directories if they do not exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(ANONYMIZED_FOLDER, exist_ok=True)
 
@@ -22,34 +23,37 @@ app.config['ANONYMIZED_FOLDER'] = ANONYMIZED_FOLDER
 
 nlp = spacy.load("ru_core_news_sm")
 
-
-
 def anonymize_document(file_path):
-    anonymized_content = ""
+    """ Extracts text from given file and anonymizes personal data.
+
+    Args:
+        file_path (str): The path to the file (PDF or image).
+
+    Returns:
+        set: A set of anonymized strings found in the document.
+    """
+    analyzer = personal_data_anonymizer.initialize_analyzer()
+    text = ""
     if file_path.lower().endswith('.pdf'):
         doc = fitz.open(file_path)
         for page in doc:
-            text = page.get_text()
-            personal_data = find_personal_data(text)
+            text += page.get_text()
     else:
         image = Image.open(file_path)
         text = pytesseract.image_to_string(image)
-        anonymized_text = find_personal_data(text)
-        personal_data = anonymized_text
+
+    personal_data = personal_data_anonymizer.find_personal_data(text, analyzer)
     return personal_data
 
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
+    """ Handles file uploads and sends back anonymized content. """
     if 'file' not in request.files:
-        return 'No file part'
+        return 'No file part', 400
     file = request.files['file']
     if file.filename == '':
-        return 'No selected file'
-
-    user_id = request.form.get('user_id')  # Получение параметра user_id из формы
-    if user_id:
-        print(f"Received user_id: {user_id}")
+        return 'No selected file', 400
 
     if file:
         filename = secure_filename(file.filename)
@@ -57,9 +61,10 @@ def upload_file():
         file.save(file_path)
         anonymized_content = anonymize_document(file_path)
         anonymized_path = os.path.join(app.config['ANONYMIZED_FOLDER'], filename)
-        with open(anonymized_path, 'w', encoding='utf-8') as f:  # Указание кодировки UTF-8
-            f.write(anonymized_content)
+        with open(anonymized_path, 'w', encoding='utf-8') as f:
+            f.write(" ".join(anonymized_content))
         return send_file(anonymized_path, as_attachment=True)
+    return 'File processed', 200  # Ensure consistent return behavior
 
 
 if __name__ == '__main__':

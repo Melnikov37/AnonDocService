@@ -45,6 +45,9 @@ jobs:
     if: github.ref == 'refs/heads/master'
 
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
     - name: Create SSH key file
       run: |
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > GitHub.pem
@@ -52,19 +55,19 @@ jobs:
 
     - name: Copy files to server
       run: |
-        scp -i GitHub.pem -o StrictHostKeyChecking=no -r * ubuntu@18.185.91.5:~/app
+        scp -i GitHub.pem -o StrictHostKeyChecking=no -r * ubuntu@18.156.178.1:~/app
 
     - name: Deploy to Server
       run: |
-        ssh -i GitHub.pem -o StrictHostKeyChecking=no ubuntu@18.185.91.5 << 'EOF'
+        ssh -i GitHub.pem -o StrictHostKeyChecking=no ubuntu@18.156.178.1 << 'EOF'
           cd ~/app
-          python -m venv env
+          python3 -m venv env
           source env/bin/activate
-          pip install --upgrade pip
-          pip install -r project/requirements.txt
-          pip install --force git+https://github.com/pydantic/pydantic.git@464ed49b1f813103a49116476bec75a94492b338
-          python -m spacy download ru_core_news_sm
-          python project/app.py
+          pip3 install --upgrade pip3
+          pip3 install -r project/requirements.txt
+          pip3 install --force git+https://github.com/pydantic/pydantic.git@464ed49b1f813103a49116476bec75a94492b338
+          python3 -m spacy download ru_core_news_sm
+          python3 project/app.py
         EOF
 
     - name: Clean up
