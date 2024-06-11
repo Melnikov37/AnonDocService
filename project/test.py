@@ -5,8 +5,8 @@ import io
 sys.stdin.reconfigure(encoding='utf-8')
 sys.stdout.reconfigure(encoding='utf-8')
 
-url = 'http://localhost:5000/upload'
-file_path = 'C:/P/AnonDocService/test3.pdf'
+url = 'http://18.156.178.1:8000/upload'
+file_path = 'C:/P/AnonDocService/test.pdf'
 
 with open(file_path, 'rb') as f:
     files = {'file': f}

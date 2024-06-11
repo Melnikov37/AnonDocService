@@ -8,7 +8,8 @@ from PIL import Image
 import fitz  # PyMuPDF
 import spacy
 import personal_data_anonymizer
-from test_recognizer import extract_text_from_image
+import image_anonymizer
+import text_recognizer
 
 # Directory setup for file uploads and anonymized results
 UPLOAD_FOLDER = 'uploads/'
@@ -52,8 +53,7 @@ def anonymize_document(file_path):
         for page in doc:
             text += page.get_text()
     else:
-        image = Image.open(file_path)
-        text = pytesseract.image_to_string(image)
+        text = text_recognizer.recognize_text(file_path)
 
     personal_data = personal_data_anonymizer.find_personal_data(text, analyzer)
     return personal_data
@@ -73,9 +73,18 @@ def upload_file():
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(file_path)
         anonymized_content = anonymize_document(file_path)
+
         anonymized_path = os.path.join(app.config['ANONYMIZED_FOLDER'], filename)
-        with open(anonymized_path, 'w', encoding='utf-8') as f:
-            f.write(" ".join(anonymized_content))
+        if file_path.lower().endswith('.pdf'):
+            # преобразовать в JPG
+            print('d')
+        else:
+            image_anonymizer.anonymize_image(file_path, anonymized_content, anonymized_path)
+
+        # with open(anonymized_path, 'w', encoding='utf-8') as f:
+        #     f.write(" ".join(anonymized_content))
+
+
         return send_file(anonymized_path, as_attachment=True)
     return 'File processed', 200  # Ensure consistent return behavior
 
