@@ -8,6 +8,7 @@ from PIL import Image
 import fitz  # PyMuPDF
 import spacy
 import personal_data_anonymizer
+from test_recognizer import extract_text_from_image
 
 # Directory setup for file uploads and anonymized results
 UPLOAD_FOLDER = 'uploads/'
@@ -22,6 +23,18 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['ANONYMIZED_FOLDER'] = ANONYMIZED_FOLDER
 
 nlp = spacy.load("ru_core_news_sm")
+
+def recognize_text(image_path):
+    """ Extracts text from given image.
+
+    Args:
+        image_path (str): The path to the image file.
+
+    Returns:
+        str: The extracted text from the image.
+    """
+    text = extract_text_from_image(image_path, lang='rus')
+    return text
 
 def anonymize_document(file_path):
     """ Extracts text from given file and anonymizes personal data.
