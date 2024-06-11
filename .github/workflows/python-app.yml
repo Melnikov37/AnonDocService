@@ -65,13 +65,13 @@ jobs:
     - name: Create SSH key file
       run: |
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > key.pem
-        chmod 600 key.pem
+        chmod 600 GitHub.pem
 
     - name: Deploy to Server
       run: |
         echo "Starting deployment..."
-        ssh -i key.pem ubuntu@3.73.156.49 'bash -s' < .github/workflows/deploy.sh
+        ssh -i GitHub.pem ubuntu@18.185.91.5 'bash -s' < .github/workflows/deploy.sh
 
     - name: Clean up
       run: |
-        rm key.pem
+        rm GitHub.pem
