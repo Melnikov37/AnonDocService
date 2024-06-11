@@ -6,6 +6,7 @@ from PIL import Image
 import fitz  # PyMuPDF
 import re
 import spacy
+from personal_data_anonymizer import find_personal_data
 
 # Настройка директорий для загрузки и анонимизации файлов
 UPLOAD_FOLDER = 'uploads/'
@@ -21,24 +22,7 @@ app.config['ANONYMIZED_FOLDER'] = ANONYMIZED_FOLDER
 
 nlp = spacy.load("ru_core_news_sm")
 
-def anonymize_text(text):
-    doc = nlp(text)
-    anonymized_text = text
-    for ent in doc.ents:
-        if ent.label_ in ['PERSON', 'GPE', 'ORG']:
-            anonymized_text = anonymized_text.replace(ent.text, '[ANONYMIZED]')
-    anonymized_text = re.sub(r'\d{10}', '[PHONE]', anonymized_text)
 
-    # Открытие файла для записи
-    with open("output.txt", "w") as file:
-        # Запись заголовка
-        file.write("Token\tPOS\tTag\tLemma\n")
-
-        # Запись токенов и их тегов
-        for token in doc:
-            file.write(f"{token.text}\t{token.pos_}\t{token.tag_}\t{token.lemma_}\n")
-
-    return anonymized_text
 
 def anonymize_document(file_path):
     anonymized_content = ""
@@ -46,14 +30,14 @@ def anonymize_document(file_path):
         doc = fitz.open(file_path)
         for page in doc:
             text = page.get_text()
-            anonymized_text = anonymize_text(text)
-            anonymized_content += anonymized_text + "\n"
+            personal_data = find_personal_data(text)
     else:
         image = Image.open(file_path)
         text = pytesseract.image_to_string(image)
-        anonymized_text = anonymize_text(text)
-        anonymized_content = anonymized_text
-    return anonymized_content
+        anonymized_text = find_personal_data(text)
+        personal_data = anonymized_text
+    return personal_data
+
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -76,6 +60,7 @@ def upload_file():
         with open(anonymized_path, 'w', encoding='utf-8') as f:  # Указание кодировки UTF-8
             f.write(anonymized_content)
         return send_file(anonymized_path, as_attachment=True)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
