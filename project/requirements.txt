@@ -4,5 +4,4 @@ Pillow
 PyMuPDF
 spacy
 presidio_analyzer
-presidio-anonymize
 analyzer
