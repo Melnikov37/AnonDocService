@@ -68,8 +68,7 @@ jobs:
           pip3 install --force git+https://github.com/pydantic/pydantic.git@464ed49b1f813103a49116476bec75a94492b338
           pip3 install gunicorn
           python3 -m spacy download ru_core_news_sm
-          cd ./project
-          gunicorn -w 4 -b 0.0.0.0:8000 app:app
+          sudo systemctl restart app.service
         EOF
 
     - name: Clean up
