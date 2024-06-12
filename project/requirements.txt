@@ -1,9 +1,8 @@
 Flask
-pytesseract
 Pillow
 PyMuPDF
-spacy
-opencv-python
-presidio_analyzer
 analyzer
 opencv-python
+presidio_analyzer
+pytesseract
+spacy

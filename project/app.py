@@ -1,7 +1,7 @@
 """ Flask application to upload and anonymize documents containing personal data. """
 
 import os
-from flask import Flask, request, send_file
+from flask import Flask, request, send_file, render_template
 from werkzeug.utils import secure_filename
 import pytesseract
 from PIL import Image
@@ -22,8 +22,6 @@ os.makedirs(ANONYMIZED_FOLDER, exist_ok=True)
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['ANONYMIZED_FOLDER'] = ANONYMIZED_FOLDER
-
-nlp = spacy.load("ru_core_news_sm")
 
 def recognize_text(image_path):
     """ Extracts text from given image.
@@ -53,11 +51,15 @@ def anonymize_document(file_path):
         for page in doc:
             text += page.get_text()
     else:
-        text = text_recognizer.recognize_text(file_path)
+        text = text_recognizer.extract_text_from_image(file_path, lang='rus')
 
     personal_data = personal_data_anonymizer.find_personal_data(text, analyzer)
     return personal_data
 
+@app.route('/')
+def index():
+    """ Главная страница с формой для загрузки файлов. """
+    return render_template('/upload_form.html')
 
 @app.route('/upload', methods=['POST'])
 def upload_file():

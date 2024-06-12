@@ -34,7 +34,7 @@ def normalize_spaces(text):
     if not isinstance(text, str):
         raise ValueError("Input must be a string")
 
-    return ' '.join(text.split())
+    return '    '.join(text.split('\n'))
 
 
 def find_personal_data(text, analyzer):

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Результат анонимизации</title>
+</head>
+<body>
+    <h1>Результат</h1>
+    {% if file_path %}
+    <p>Файл успешно обработан и сохранен: {{ file_path }}</p>
+    <a href="{{ file_path }}" download>Скачать файл</a>
+    {% else %}
+    <p>Ошибка обработки файла.</p>
+    {% endif %}
+</body>
+</html>
