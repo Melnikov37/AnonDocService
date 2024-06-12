@@ -3,7 +3,6 @@
 import os
 from flask import Flask, request, send_file, render_template
 from werkzeug.utils import secure_filename
-import pytesseract
 from PIL import Image
 import fitz  # PyMuPDF
 import spacy
