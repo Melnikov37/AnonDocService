@@ -3,7 +3,12 @@
 import pytesseract
 import cv2
 import numpy as np
+import platform
 from PIL import Image, ImageEnhance
+
+# Проверяем, является ли операционная система Ubuntu
+if platform.system() == 'Linux':
+    pytesseract.pytesseract.tesseract_cmd = r'/usr/bin/tesseract'
 
 def preprocess_image(image_path: str) -> np.ndarray:
     """
