@@ -12,8 +12,8 @@ import image_anonymizer
 import text_recognizer
 
 # Directory setup for file uploads and anonymized results
-UPLOAD_FOLDER = 'uploads\\'
-ANONYMIZED_FOLDER = 'anonymized\\'
+UPLOAD_FOLDER = 'uploads/'
+ANONYMIZED_FOLDER = 'anonymized/'
 
 # Create directories if they do not exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
