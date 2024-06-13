@@ -10,6 +10,7 @@ from PIL import Image, ImageEnhance
 if platform.system() == 'Linux':
     pytesseract.pytesseract.tesseract_cmd = r'/usr/bin/tesseract'
 
+
 def preprocess_image(image_path: str) -> np.ndarray:
     """
     Preprocess the input image to enhance it for text recognition.

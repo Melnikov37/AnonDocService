@@ -6,3 +6,4 @@ opencv-python
 presidio_analyzer
 pytesseract
 spacy
+nltk
