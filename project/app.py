@@ -54,7 +54,8 @@ def find_content_to_anonymize(file_path):
             text += page.get_text()
     else:
         text = text_recognizer.extract_text_from_image(file_path, lang='rus')
-    return personal_data_recognizer.find_personal_data(text, analyzer)
+    personal_data = personal_data_recognizer.find_personal_data(text, analyzer)
+    return personal_data
 
 
 @app.route('/')
@@ -83,7 +84,7 @@ def upload_file():
             # преобразовать в JPG
             print('d')
         else:
-            image_anonymizer.anonymize_image(file_path, content_to_anonymize, anonymized_path)
+            image_anonymizer.anonymize_image(file_path ,"temp/preprocessed_image.jpg", content_to_anonymize, anonymized_path)
 
         # with open(anonymized_path, 'w', encoding='utf-8') as f:
         #     f.write(" ".join(anonymized_content))
