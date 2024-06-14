@@ -55,7 +55,7 @@ def find_content_to_anonymize(file_path):
     else:
         text_lines = text_recognizer.extract_lines_from_image(file_path, lang='rus')
         text = text_recognizer.lines_to_text(text_lines)
-        personal_data = personal_data_recognizer.find_personal_data(text, analyzer)
+    personal_data = personal_data_recognizer.find_personal_data(text, analyzer)
     return personal_data
 
 
