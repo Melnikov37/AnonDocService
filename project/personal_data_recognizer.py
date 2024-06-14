@@ -137,7 +137,7 @@ def analyze_text_by_regex(text):
 
 def split_words_in_array(array):
     """
-    Split elements in the array into separate words if they contain more than one word.
+    Split elements in the array into separate words if they contain more than one word .
 
     Args:
         array (list): The input array containing strings.
