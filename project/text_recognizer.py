@@ -173,7 +173,7 @@ def extract_lines_from_image(image_path: str, lang: str = 'rus') -> list:
             last_word = current_line[-1]
             last_word_right = last_word['left'] + last_word['width']
 
-            if left < last_word_right or left - last_word_right > 50:
+            if left < last_word_right or left - last_word_right > 80:
                 lines.append(current_line)
                 current_line = []
 
