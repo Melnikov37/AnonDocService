@@ -170,9 +170,10 @@ def extract_text_from_image(image_path: str, lang: str = 'rus') -> str:
     str: The extracted text from the image.
     """
     preprocessed_image = preprocess_image(image_path)
+    cv2.imwrite("temp/preprocessed_image.jpg", preprocessed_image)
     custom_config = r'--oem 1 --psm 6'
     ocr_text = pytesseract.image_to_string(preprocessed_image, lang=lang, config=custom_config)
-    return ocr_text, preprocessed_image
+    return ocr_text
 
 def extract_data_from_image(image_path: str, lang: str = 'rus') -> dict:
     """

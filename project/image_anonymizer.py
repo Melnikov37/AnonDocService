@@ -8,7 +8,7 @@ if platform.system() == 'Linux':
     pytesseract.pytesseract.tesseract_cmd = r'/usr/bin/tesseract'
 
 
-def anonymize_image(image_path: str, words_to_anonymize: List[str], output_path: str) -> None:
+def anonymize_image(image_path: str, preprocess_image_path: str, words_to_anonymize: List[str], output_path: str) -> None:
     """
     Anonymize specified words on the image by covering them with black rectangles.
 
@@ -20,10 +20,11 @@ def anonymize_image(image_path: str, words_to_anonymize: List[str], output_path:
     image = cv2.imread(image_path)
     if image is None:
         raise FileNotFoundError(f"The image at path '{image_path}' could not be found.")
+    preprocess_image = cv2.imread(preprocess_image_path)
+    if preprocess_image is None:
+        raise FileNotFoundError(f"The image at path '{preprocess_image_path}' could not be found.")
 
-    rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-
-    data = pytesseract.image_to_data(rgb_image, lang='rus', output_type=pytesseract.Output.DICT)
+    data = pytesseract.image_to_data(preprocess_image, lang='rus', output_type=pytesseract.Output.DICT)
 
     confidence_threshold = 60
 
