@@ -107,7 +107,8 @@ def contextualize(context_tips, context_element, context):
     for clue in context_tips:
 
         if (re.search(rf'{clue.lower()}.{{0,50}}{context_element.lower()}', context.lower())
-                or re.search(rf'{context_element.lower()}.{{0,50}}{clue.lower()}', context.lower())):
+                or re.search(rf'{context_element.lower()}.{{0,50}}{clue.lower()}', context.lower())
+                or clue in context_element):
             return context_element
 
     return None
