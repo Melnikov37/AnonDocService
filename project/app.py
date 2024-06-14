@@ -2,11 +2,12 @@
 
 import os
 from flask import Flask, request, send_file, render_template
+from pytesseract import pytesseract
 from werkzeug.utils import secure_filename
 from PIL import Image
 import fitz  # PyMuPDF
 import spacy
-import personal_data_anonymizer
+import personal_data_recognizer
 import image_anonymizer
 import text_recognizer
 
@@ -22,6 +23,7 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['ANONYMIZED_FOLDER'] = ANONYMIZED_FOLDER
 
+
 def recognize_text(image_path):
     """ Extracts text from given image.
 
@@ -31,19 +33,20 @@ def recognize_text(image_path):
     Returns:
         str: The extracted text from the image.
     """
-    text = extract_text_from_image(image_path, lang='rus')
+    text = text_recognizer.extract_text_from_image(image_path, lang='rus')
     return text
 
-def anonymize_document(file_path):
-    """ Extracts text from given file and anonymizes personal data.
+
+def find_content_to_anonymize(file_path):
+    """ Extracts personal data from document.
 
     Args:
         file_path (str): The path to the file (PDF or image).
 
     Returns:
-        set: A set of anonymized strings found in the document.
+        list: A list of anonymized strings found in the document.
     """
-    analyzer = personal_data_anonymizer.initialize_analyzer()
+    analyzer = personal_data_recognizer.initialize_analyzer()
     text = ""
     if file_path.lower().endswith('.pdf'):
         doc = fitz.open(file_path)
@@ -51,14 +54,14 @@ def anonymize_document(file_path):
             text += page.get_text()
     else:
         text = text_recognizer.extract_text_from_image(file_path, lang='rus')
+    return personal_data_recognizer.find_personal_data(text, analyzer)
 
-    personal_data = personal_data_anonymizer.find_personal_data(text, analyzer)
-    return personal_data
 
 @app.route('/')
 def index():
     """ Главная страница с формой для загрузки файлов. """
     return render_template('/upload_form.html')
+
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -73,18 +76,17 @@ def upload_file():
         filename = secure_filename(file.filename)
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(file_path)
-        anonymized_content = anonymize_document(file_path)
+        content_to_anonymize = find_content_to_anonymize(file_path)
 
         anonymized_path = os.path.join(app.config['ANONYMIZED_FOLDER'], filename)
         if file_path.lower().endswith('.pdf'):
             # преобразовать в JPG
             print('d')
         else:
-            image_anonymizer.anonymize_image(file_path, anonymized_content, anonymized_path)
+            image_anonymizer.anonymize_image(file_path, content_to_anonymize, anonymized_path)
 
         # with open(anonymized_path, 'w', encoding='utf-8') as f:
         #     f.write(" ".join(anonymized_content))
-
 
         return send_file(anonymized_path, as_attachment=True)
     return 'File processed', 200  # Ensure consistent return behavior
