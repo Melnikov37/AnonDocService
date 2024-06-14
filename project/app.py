@@ -10,6 +10,7 @@ import spacy
 import personal_data_recognizer
 import image_anonymizer
 import text_recognizer
+import cv2
 
 # Directory setup for file uploads and anonymized results
 UPLOAD_FOLDER = 'uploads/'
@@ -73,10 +74,10 @@ def upload_file():
     if file.filename == '':
         return 'No selected file', 400
 
-    if file:
-        filename = secure_filename(file.filename)
+    file_list = os.listdir(app.config['UPLOAD_FOLDER'])
+    for filename in file_list:
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(file_path)
+        # file.save(file_path)
         content_to_anonymize = find_content_to_anonymize(file_path)
 
         anonymized_path = os.path.join(app.config['ANONYMIZED_FOLDER'], filename)
@@ -84,13 +85,14 @@ def upload_file():
             # преобразовать в JPG
             print('d')
         else:
-            image_anonymizer.anonymize_image(file_path ,"temp/preprocessed_image.jpg", content_to_anonymize, anonymized_path)
+            image = image_anonymizer.anonymize_image(file_path ,"temp/preprocessed_image.jpg", content_to_anonymize, anonymized_path)
+            cv2.imwrite(anonymized_path, image)
 
         # with open(anonymized_path, 'w', encoding='utf-8') as f:
         #     f.write(" ".join(anonymized_content))
 
-        return send_file(anonymized_path, as_attachment=True)
-    return 'File processed', 200  # Ensure consistent return behavior
+    return send_file(anonymized_path, as_attachment=True)
+    # return 'File processed', 200  # Ensure consistent return behavior
 
 
 if __name__ == '__main__':

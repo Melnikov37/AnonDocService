@@ -38,4 +38,4 @@ def anonymize_image(image_path: str, preprocess_image_path: str, words_to_anonym
                                 data['width'][i], data['height'][i])
                 cv2.rectangle(image, (x, y), (x + w, y + h), (0, 0, 0), -1)
 
-    cv2.imwrite(output_path, image)
+    return image
