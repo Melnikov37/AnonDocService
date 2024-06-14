@@ -34,10 +34,8 @@ def anonymize_image(image_path: str, preprocess_image_path: str, words_to_anonym
     for i in range(n_boxes):
 
         word = data['text'][i]
-        for word_to_anonymize in words_to_anonymize:
-            if word_to_anonymize in word.lower():
-                (x, y, w, h) = (data['left'][i], data['top'][i],
-                                data['width'][i], data['height'][i])
-                cv2.rectangle(image, (x, y), (x + w, y + h), (0, 0, 0), -1)
-
+        if word.lower() in words_to_anonymize:
+            (x, y, w, h) = (data['left'][i], data['top'][i],
+                            data['width'][i], data['height'][i])
+            cv2.rectangle(image, (x, y), (x + w, y + h), (0, 0, 0), -1)
     return image
