@@ -31,7 +31,7 @@ def recognize_text(image_path):
     Returns:
         str: The extracted text from the image.
     """
-    text = extract_text_from_image(image_path, lang='rus')
+    text = text_recognizer.extract_text_from_image(image_path, lang='rus')
     return text
 
 def anonymize_document(file_path):
@@ -72,7 +72,11 @@ def upload_file():
     if file:
         filename = secure_filename(file.filename)
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(file_path)
+        try:
+            file.save(file_path)
+        except Exception as e:
+            print(e)
+
         anonymized_content = anonymize_document(file_path)
 
         anonymized_path = os.path.join(app.config['ANONYMIZED_FOLDER'], filename)
@@ -80,6 +84,7 @@ def upload_file():
             # преобразовать в JPG
             print('d')
         else:
+            text_lines = text_recognizer.extract_lines_from_image(file_path, lang='rus')
             image_anonymizer.anonymize_image(file_path, anonymized_content, anonymized_path)
 
         # with open(anonymized_path, 'w', encoding='utf-8') as f:
