@@ -5,7 +5,6 @@ import os
 import cv2
 import fitz  # PyMuPDF
 from flask import Flask, request, send_file, render_template
-from pytesseract import pytesseract
 
 import image_anonymizer
 import personal_data_recognizer
@@ -13,7 +12,7 @@ import text_recognizer
 
 # Directory setup for file uploads and anonymized results
 UPLOAD_FOLDER = 'uploads/'
-ANONYMIZED_FOLDER = 'C:\\Users\\maksim.fomichev\\Desktop\\AnonDocService\\anonymized'
+ANONYMIZED_FOLDER = 'anonymized/'
 TEMP_FOLDER = 'temp/'
 
 # Create directories if they do not exist
@@ -25,7 +24,6 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['ANONYMIZED_FOLDER'] = ANONYMIZED_FOLDER
 
-pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 def recognize_text(image_path):
     """ Extracts text from given image.
