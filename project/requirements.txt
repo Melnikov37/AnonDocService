@@ -7,3 +7,5 @@ presidio_analyzer
 pytesseract
 spacy
 nltk
+pdf2image
+pdfplumber

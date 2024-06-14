@@ -1,10 +1,10 @@
 """Module to preprocess image and recognize text on it"""
 
-import pytesseract
+import platform
+
 import cv2
 import numpy as np
-import platform
-from PIL import Image, ImageEnhance
+import pytesseract
 
 # Проверяем, является ли операционная система Ubuntu
 if platform.system() == 'Linux':
@@ -33,40 +33,40 @@ def preprocess_image(image_path: str) -> np.ndarray:
     image = gray_image
 
     # if bad_image_check(image):
-        # threshold_image = cv2.adaptiveThreshold(
-        #     image,
-        #     255,
-        #     cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-        #     cv2.THRESH_BINARY,
-        #     101,
-        #     21)
-        # threshold_image = cv2.threshold(
-        #     image,
-        #     0,
-        #     255,
-        #     cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
-        # cv2.imwrite("temp/2-threshold_image.jpg", threshold_image)
-        # kernel = np.ones((1, 1), np.uint8)
-        # dilate_image = cv2.dilate(threshold_image, kernel, iterations=1)
-        # cv2.imwrite("temp/3-dilate_image.jpg", dilate_image)
-        # kernel = np.ones((1, 1), np.uint8)
-        # erode_image = cv2.erode(dilate_image, kernel, iterations=1)
-        # cv2.imwrite("temp/4-erode_image.jpg", erode_image)
-        # morphologyEx_image = cv2.morphologyEx(erode_image, cv2.MORPH_CLOSE, kernel)
-        # cv2.imwrite("temp/5-morphologyEx_image.jpg", morphologyEx_image)
-        # medianBlur_image = cv2.medianBlur(morphologyEx_image, 1)
-        # cv2.imwrite("temp/6-medianBlur_image.jpg", medianBlur_image)
-        # orc_text = pytesseract.image_to_string(medianBlur_image, lang='rus+eng')
-        # with open("temp/orc_text_with_threshold.txt", "w", encoding="utf-8") as file:
-        #     file.write(orc_text)
-        # image = medianBlur_image
+    # threshold_image = cv2.adaptiveThreshold(
+    #     image,
+    #     255,
+    #     cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+    #     cv2.THRESH_BINARY,
+    #     101,
+    #     21)
+    # threshold_image = cv2.threshold(
+    #     image,
+    #     0,
+    #     255,
+    #     cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
+    # cv2.imwrite("temp/2-threshold_image.jpg", threshold_image)
+    # kernel = np.ones((1, 1), np.uint8)
+    # dilate_image = cv2.dilate(threshold_image, kernel, iterations=1)
+    # cv2.imwrite("temp/3-dilate_image.jpg", dilate_image)
+    # kernel = np.ones((1, 1), np.uint8)
+    # erode_image = cv2.erode(dilate_image, kernel, iterations=1)
+    # cv2.imwrite("temp/4-erode_image.jpg", erode_image)
+    # morphologyEx_image = cv2.morphologyEx(erode_image, cv2.MORPH_CLOSE, kernel)
+    # cv2.imwrite("temp/5-morphologyEx_image.jpg", morphologyEx_image)
+    # medianBlur_image = cv2.medianBlur(morphologyEx_image, 1)
+    # cv2.imwrite("temp/6-medianBlur_image.jpg", medianBlur_image)
+    # orc_text = pytesseract.image_to_string(medianBlur_image, lang='rus+eng')
+    # with open("temp/orc_text_with_threshold.txt", "w", encoding="utf-8") as file:
+    #     file.write(orc_text)
+    # image = medianBlur_image
 
     # image_fixed = deskew(image)
     # cv2.imwrite("temp/7-image_fixed.jpg", image_fixed)
 
-    text_boxes_image = find_text_boxes(image_fixed)
+    text_boxes_image = find_text_boxes(image)
 
-    return image_fixed
+    return image
 
 
 def find_text_boxes(image):
@@ -82,11 +82,12 @@ def find_text_boxes(image):
     cnts = sorted(cnts, key=lambda x: cv2.boundingRect(x)[1])
     for c in cnts:
         x, y, w, h = cv2.boundingRect(c)
-        roi = image[y:y+h, x:x + w]
+        roi = image[y:y + h, x:x + w]
         cv2.rectangle(base_image, (x, y), (x + w, y + h), (36, 255, 12), 2)
 
     cv2.imwrite("temp/find_text_boxes/image_with_border.jpg", base_image)
     return roi
+
 
 def bad_image_check(image):
     _, threshold = cv2.threshold(image, 210, 230, cv2.THRESH_BINARY)
@@ -95,6 +96,7 @@ def bad_image_check(image):
     with open("temp/bad_image_check.txt", "w", encoding="utf-8") as file:
         file.write(orc_text)
     return len(orc_text) < 300
+
 
 def remove_borders(image):
     cropped_image = image.copy()
@@ -113,12 +115,13 @@ def remove_borders(image):
 
     # Обрезаем изображение
     x, y, w, h = cv2.boundingRect(max_contour)
-    cv2.rectangle(cropped_image2,(x,y),(x+w,y+h),(0,255,0),2)
+    cv2.rectangle(cropped_image2, (x, y), (x + w, y + h), (0, 255, 0), 2)
     cv2.imwrite("temp/boxes2.jpg", cropped_image2)
-    cropped_image = image[y:y+h, x:x+w]
+    cropped_image = image[y:y + h, x:x + w]
     cv2.waitKey(0)
     cv2.destroyAllWindows()
     return (cropped_image)
+
 
 def getSkewAngle(cvImage) -> float:
     # Prep image, copy, convert to gray scale, blur, and threshold
@@ -134,15 +137,15 @@ def getSkewAngle(cvImage) -> float:
 
     # Find all contours
     contours, hierarchy = cv2.findContours(dilate, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
-    contours = sorted(contours, key = cv2.contourArea, reverse = True)
+    contours = sorted(contours, key=cv2.contourArea, reverse=True)
     for c in contours:
         rect = cv2.boundingRect(c)
-        x,y,w,h = rect
-        cv2.rectangle(newImage,(x,y),(x+w,y+h),(0,255,0),2)
+        x, y, w, h = rect
+        cv2.rectangle(newImage, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
     # Find largest contour and surround in min area box
     largestContour = contours[0]
-    print (len(contours))
+    print(len(contours))
     minAreaRect = cv2.minAreaRect(largestContour)
     cv2.imwrite("temp/boxes.jpg", newImage)
     # Determine the angle. Convert it to the value that was originally used to obtain skewed image
@@ -150,6 +153,7 @@ def getSkewAngle(cvImage) -> float:
     if angle < -45:
         angle = 90 + angle
     return -1.0 * angle
+
 
 def rotateImage(cvImage, angle: float):
     newImage = cvImage.copy()
@@ -159,9 +163,11 @@ def rotateImage(cvImage, angle: float):
     newImage = cv2.warpAffine(newImage, M, (w, h), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
     return newImage
 
+
 def deskew(cvImage):
     angle = getSkewAngle(cvImage)
     return rotateImage(cvImage, -1.0 * angle)
+
 
 def extract_text_from_image(image_path: str, lang: str = 'rus') -> str:
     """
@@ -179,6 +185,7 @@ def extract_text_from_image(image_path: str, lang: str = 'rus') -> str:
     custom_config = r'--oem 1 --psm 6'
     ocr_text = pytesseract.image_to_string(preprocessed_image, lang=lang, config=custom_config)
     return ocr_text
+
 
 def extract_data_from_image(image_path: str, lang: str = 'rus') -> dict:
     """
