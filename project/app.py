@@ -4,7 +4,6 @@ import os
 
 import fitz  # PyMuPDF
 from flask import Flask, request, send_file, render_template
-from pytesseract import pytesseract
 from werkzeug.utils import secure_filename
 
 import image_anonymizer
@@ -24,8 +23,6 @@ os.makedirs(TEMP_FOLDER, exist_ok=True)
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['ANONYMIZED_FOLDER'] = ANONYMIZED_FOLDER
-
-pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 
 def recognize_text(image_path):
