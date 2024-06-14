@@ -15,13 +15,16 @@ def extract_sentences_by_newline(text):
 def preprocess(text, lang='russian'):
     rows = extract_sentences_by_newline(text)
     cleaned_rows = []
+
     for row in rows:
-        sentence = row
-        sentence = re.sub(r'[^\w\s]', '', sentence)
-        tokens = nltk.word_tokenize(sentence, lang)
+        row = re.sub(r'\.(?=\s|$)', '', row)
+        row = re.sub(r'(?<!\w)[^\w\s.-]+(?!\w)', '', row)
+        row = re.sub(r'(?<!\w)[^\w\s.-]+|[^\w\s.-]+(?!\w)', '', row)
+
+        tokens = nltk.word_tokenize(row, lang)
         filtered_tokens = [word.lower() for word in tokens if not word in stopwords.words(lang)]
+
         filter_sentence = filtered_tokens
         cleaned_rows.append(filter_sentence)
 
     return cleaned_rows
-

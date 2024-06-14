@@ -1,7 +1,7 @@
-from pdf2image import convert_from_path
-from PIL import Image
-import pdfplumber
 import os
+
+from pdf2image import convert_from_path
+
 
 def convert_pdf_to_jpg(pdf_path, output_folder):
     """Конвертирует PDF файл в изображения JPG, каждая страница становится отдельным файлом."""
@@ -11,10 +11,12 @@ def convert_pdf_to_jpg(pdf_path, output_folder):
     for i, image in enumerate(images):
         image.save(f'{output_folder}/page_{i + 1}.jpg', 'JPEG')
 
+
 def convert_docx_to_pdf(docx_path, pdf_path):
     """Конвертирует DOCX файл в PDF. Требует установленного LibreOffice или Microsoft Office."""
     # Эта функция является заглушкой и должна быть реализована с учётом конкретной среды
     raise NotImplementedError("DOCX to PDF conversion requires specific environment setup.")
+
 
 def convert_docx_to_jpg(docx_path, output_folder):
     """Конвертирует DOCX документ в JPG изображения через промежуточный PDF."""

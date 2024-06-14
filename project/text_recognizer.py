@@ -1,10 +1,10 @@
 """Module to preprocess image and recognize text on it"""
 
-import pytesseract
+import platform
+
 import cv2
 import numpy as np
-import platform
-from PIL import Image, ImageEnhance
+import pytesseract
 
 # Проверяем, является ли операционная система Ubuntu
 if platform.system() == 'Linux':
@@ -79,11 +79,12 @@ def find_text_boxes(image):
     cnts = sorted(cnts, key=lambda x: cv2.boundingRect(x)[1])
     for c in cnts:
         x, y, w, h = cv2.boundingRect(c)
-        roi = image[y:y+h, x:x + w]
+        roi = image[y:y + h, x:x + w]
         cv2.rectangle(base_image, (x, y), (x + w, y + h), (36, 255, 12), 2)
 
     cv2.imwrite("temp/find_text_boxes/image_with_border.jpg", base_image)
     return roi
+
 
 def bad_image_check(image):
     blur = cv2.GaussianBlur(image, (7, 7), 0)
@@ -101,6 +102,7 @@ def bad_image_check(image):
     approx = cv2.approxPolyDP(max_contour, 0.02 * perimeter, True)
 
     return len(approx) < 6
+
 def extract_text_from_image(image_path: str, lang: str = 'rus') -> str:
     """
     Extract text from the input image using Tesseract OCR.
@@ -117,6 +119,7 @@ def extract_text_from_image(image_path: str, lang: str = 'rus') -> str:
     custom_config = r'--oem 3 --psm 1'
     ocr_text = pytesseract.image_to_string(preprocessed_image, lang=lang, config=custom_config)
     return ocr_text
+
 
 def extract_data_from_image(image_path: str, lang: str = 'rus') -> dict:
     """

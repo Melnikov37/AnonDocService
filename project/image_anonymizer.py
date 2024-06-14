@@ -2,13 +2,15 @@ import cv2
 import pytesseract
 import platform
 from typing import List
+from text_recognizer import extract_data_from_image
 
 # Проверяем, является ли операционная система Ubuntu
 if platform.system() == 'Linux':
     pytesseract.pytesseract.tesseract_cmd = r'/usr/bin/tesseract'
 
 
-def anonymize_image(image_path: str, preprocess_image_path: str, words_to_anonymize: List[str], output_path: str) -> None:
+def anonymize_image(image_path: str, preprocess_image_path: str, words_to_anonymize: List[str],
+                    output_path: str) -> None:
     """
     Anonymize specified words on the image by covering them with black rectangles.
 
@@ -24,16 +26,16 @@ def anonymize_image(image_path: str, preprocess_image_path: str, words_to_anonym
     if preprocess_image is None:
         raise FileNotFoundError(f"The image at path '{preprocess_image_path}' could not be found.")
 
-    data = pytesseract.image_to_data(preprocess_image, lang='rus', output_type=pytesseract.Output.DICT)
-
-    confidence_threshold = 60
+    #todo: эти данные нужно где-то кешить(слова - координаты слова)
+    data = extract_data_from_image(image_path)
 
     n_boxes = len(data['text'])
 
     for i in range(n_boxes):
-        if int(data['conf'][i]) > confidence_threshold:
-            word = data['text'][i]
-            if word.lower() in words_to_anonymize:
+
+        word = data['text'][i]
+        for word_to_anonymize in words_to_anonymize:
+            if word_to_anonymize in word.lower():
                 (x, y, w, h) = (data['left'][i], data['top'][i],
                                 data['width'][i], data['height'][i])
                 cv2.rectangle(image, (x, y), (x + w, y + h), (0, 0, 0), -1)
