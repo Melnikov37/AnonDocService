@@ -101,7 +101,7 @@ def bad_image_check(image):
     perimeter = cv2.arcLength(max_contour, True)
     approx = cv2.approxPolyDP(max_contour, 0.02 * perimeter, True)
 
-    return len(approx) < 6
+    return len(approx) < 5
 
 def extract_text_from_image(image_path: str, lang: str = 'rus') -> str:
     """
