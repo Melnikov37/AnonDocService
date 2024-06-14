@@ -17,7 +17,6 @@ def preprocess(text, lang='russian'):
     cleaned_rows = []
 
     date_pattern = re.compile(r'\b\d{1,2}\.\d{1,2}\.\d{4}\b')
-
     for row in rows:
         dates = date_pattern.findall(row)
 

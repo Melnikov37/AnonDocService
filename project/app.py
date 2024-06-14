@@ -1,27 +1,31 @@
 """ Flask application to upload and anonymize documents containing personal data. """
 
 import os
+
+import fitz  # PyMuPDF
 from flask import Flask, request, send_file, render_template
 from pytesseract import pytesseract
 from werkzeug.utils import secure_filename
-from PIL import Image
-import fitz  # PyMuPDF
-import spacy
-import personal_data_recognizer
+
 import image_anonymizer
+import personal_data_recognizer
 import text_recognizer
 
 # Directory setup for file uploads and anonymized results
 UPLOAD_FOLDER = 'uploads/'
 ANONYMIZED_FOLDER = 'anonymized/'
+TEMP_FOLDER = 'temp/'
 
 # Create directories if they do not exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(ANONYMIZED_FOLDER, exist_ok=True)
+os.makedirs(TEMP_FOLDER, exist_ok=True)
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['ANONYMIZED_FOLDER'] = ANONYMIZED_FOLDER
+
+pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 
 def recognize_text(image_path):
@@ -84,7 +88,8 @@ def upload_file():
             # преобразовать в JPG
             print('d')
         else:
-            image_anonymizer.anonymize_image(file_path ,"temp/preprocessed_image.jpg", content_to_anonymize, anonymized_path)
+            image_anonymizer.anonymize_image(file_path, "temp/preprocessed_image.jpg", content_to_anonymize,
+                                             anonymized_path)
 
         # with open(anonymized_path, 'w', encoding='utf-8') as f:
         #     f.write(" ".join(anonymized_content))

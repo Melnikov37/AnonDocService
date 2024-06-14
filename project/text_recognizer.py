@@ -175,6 +175,7 @@ def extract_text_from_image(image_path: str, lang: str = 'rus') -> str:
     ocr_text = pytesseract.image_to_string(preprocessed_image, lang=lang, config=custom_config)
     return ocr_text
 
+
 def extract_data_from_image(image_path: str, lang: str = 'rus') -> dict:
     """
     Extract data as a pytesseract dictionary from the input image using Tesseract OCR.
