@@ -1,6 +1,11 @@
 import cv2
 import pytesseract
+import platform
 from typing import List
+
+# Проверяем, является ли операционная система Ubuntu
+if platform.system() == 'Linux':
+    pytesseract.pytesseract.tesseract_cmd = r'/usr/bin/tesseract'
 
 
 def anonymize_image(image_path: str, words_to_anonymize: List[str], output_path: str) -> None:
@@ -27,7 +32,7 @@ def anonymize_image(image_path: str, words_to_anonymize: List[str], output_path:
     for i in range(n_boxes):
         if int(data['conf'][i]) > confidence_threshold:
             word = data['text'][i]
-            if word in words_to_anonymize:
+            if word.lower() in words_to_anonymize:
                 (x, y, w, h) = (data['left'][i], data['top'][i],
                                 data['width'][i], data['height'][i])
                 cv2.rectangle(image, (x, y), (x + w, y + h), (0, 0, 0), -1)

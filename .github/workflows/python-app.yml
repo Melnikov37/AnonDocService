@@ -55,11 +55,11 @@ jobs:
 
     - name: Copy files to server
       run: |
-        scp -i GitHub.pem -o StrictHostKeyChecking=no -r * ubuntu@18.156.178.1:~/app
+        scp -i GitHub.pem -o StrictHostKeyChecking=no -r * ubuntu@52.58.164.169:~/app
 
     - name: Deploy to Server
       run: |
-        ssh -i GitHub.pem -o StrictHostKeyChecking=no ubuntu@18.156.178.1 << 'EOF'
+        ssh -i GitHub.pem -o StrictHostKeyChecking=no ubuntu@52.58.164.169 << 'EOF'
           cd ~/app
           python3 -m venv env
           source env/bin/activate
