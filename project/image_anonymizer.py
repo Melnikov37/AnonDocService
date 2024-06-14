@@ -3,7 +3,6 @@ import pytesseract
 import platform
 from typing import List
 from text_recognizer import extract_lines_from_image
-import numpy as np
 
 # Проверяем, является ли операционная система Ubuntu
 if platform.system() == 'Linux':
