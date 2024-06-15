@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  pylint:
     runs-on: ubuntu-latest
 
     steps:
@@ -40,7 +40,7 @@ jobs:
     #     pytest
 
   deploy:
-    needs: build
+    needs: pylint
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'
 
@@ -55,11 +55,11 @@ jobs:
 
     - name: Copy files to server
       run: |
-        scp -i GitHub.pem -o StrictHostKeyChecking=no -r * ubuntu@52.58.164.169:~/app
+        scp -i GitHub.pem -o StrictHostKeyChecking=no -r * ubuntu@158.160.29.130:~/app
 
     - name: Deploy to Server
       run: |
-        ssh -i GitHub.pem -o StrictHostKeyChecking=no ubuntu@52.58.164.169 << 'EOF'
+        ssh -i GitHub.pem -o StrictHostKeyChecking=no ubuntu@158.160.29.130 << 'EOF'
           cd ~/app
           python3 -m venv env
           source env/bin/activate
