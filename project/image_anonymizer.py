@@ -2,7 +2,7 @@ import cv2
 import pytesseract
 import platform
 from typing import List
-from text_recognizer import extract_lines_from_image
+from text_recognizer import extract_lines_from_image, extract_text_from_image
 
 # Проверяем, является ли операционная система Ubuntu
 if platform.system() == 'Linux':
@@ -19,15 +19,15 @@ def anonymize_image(image_path: str, preprocess_image_path: str, words_to_anonym
         words_to_anonymize (List[str]): List of words to be anonymized.
         output_path (str): Path to save the anonymized image.
     """
-    image = cv2.imread(image_path)
+    image = cv2.imread(preprocess_image_path)
     if image is None:
         raise FileNotFoundError(f"The image at path '{image_path}' could not be found.")
-    preprocess_image = cv2.imread(preprocess_image_path)
-    if preprocess_image is None:
-        raise FileNotFoundError(f"The image at path '{preprocess_image_path}' could not be found.")
+    # preprocess_image = cv2.imread(preprocess_image_path)
+    # if preprocess_image is None:
+    #     raise FileNotFoundError(f"The image at path '{preprocess_image_path}' could not be found.")
 
     #todo: эти данные нужно где-то кешить(слова - координаты слова)
-    data_lines = extract_lines_from_image(image_path)
+    data_lines = extract_lines_from_image(preprocess_image_path, preprocessing_required=False)
 
     # Convert a two-dimensional list to a one-dimensional list
     data = [line for item in data_lines for line in item]

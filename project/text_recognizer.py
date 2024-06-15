@@ -103,7 +103,7 @@ def bad_image_check(image):
 
     return len(approx) < 5
 
-def extract_text_from_image(image_path: str, lang: str = 'rus') -> str:
+def extract_text_from_image(image_path: str, lang: str = 'rus', preprocessing_required: bool = True) -> str:
     """
     Extract text from the input image using Tesseract OCR.
 
@@ -114,14 +114,17 @@ def extract_text_from_image(image_path: str, lang: str = 'rus') -> str:
     Returns:
     str: The extracted text from the image.
     """
-    preprocessed_image = preprocess_image(image_path)
-    cv2.imwrite("temp/preprocessed_image.jpg", preprocessed_image)
+    if preprocessing_required:
+        image = preprocess_image(image_path)
+    else:
+        image = cv2.imread(image_path)
+    cv2.imwrite("temp/preprocessed_image.jpg", image)
     custom_config = r'--oem 3 --psm 1'
-    ocr_text = pytesseract.image_to_string(preprocessed_image, lang=lang, config=custom_config)
+    ocr_text = pytesseract.image_to_string(image, lang=lang, config=custom_config)
     return ocr_text
 
 
-def extract_data_from_image(image_path: str, lang: str = 'rus') -> dict:
+def extract_data_from_image(image_path: str, lang: str = 'rus', preprocessing_required: bool = True) -> dict:
     """
     Extract data as a pytesseract dictionary from the input image using Tesseract OCR.
 
@@ -132,17 +135,20 @@ def extract_data_from_image(image_path: str, lang: str = 'rus') -> dict:
     Returns:
     dict: The extracted data as a pytesseract dictionary from the image.
     """
-    preprocessed_image = preprocess_image(image_path)
-    cv2.imwrite("temp/preprocessed_image.jpg", preprocessed_image)
+    if preprocessing_required:
+        image = preprocess_image(image_path)
+    else:
+        image = cv2.imread(image_path)
+    cv2.imwrite("temp/preprocessed_image.jpg", image)
     custom_config = r'--oem 3 --psm 1'
     return pytesseract.image_to_data(
-        preprocessed_image,
+        image,
         lang=lang,
         config=custom_config,
         output_type=pytesseract.Output.DICT)
 
 
-def extract_lines_from_image(image_path: str, lang: str = 'rus') -> list:
+def extract_lines_from_image(image_path: str, lang: str = 'rus', preprocessing_required: bool = True) -> list:
     """
     Extract lines of text from the input image using Tesseract OCR.
 
@@ -154,7 +160,7 @@ def extract_lines_from_image(image_path: str, lang: str = 'rus') -> list:
     list: The extracted lines of text from the image.
     """
 
-    data = extract_data_from_image(image_path, lang=lang)
+    data = extract_data_from_image(image_path, lang=lang, preprocessing_required=preprocessing_required)
 
     lines = []
     current_line = []
@@ -173,7 +179,7 @@ def extract_lines_from_image(image_path: str, lang: str = 'rus') -> list:
             last_word = current_line[-1]
             last_word_right = last_word['left'] + last_word['width']
 
-            if left < last_word_right or left - last_word_right > 80:
+            if left < last_word_right or left - last_word_right > 250:
                 lines.append(current_line)
                 current_line = []
 
