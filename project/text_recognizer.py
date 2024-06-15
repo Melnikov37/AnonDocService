@@ -24,12 +24,12 @@ def preprocess_image(image_path: str) -> np.ndarray:
     orc_text = "";
     image = cv2.imread(image_path)
     base_image = cv2.imread(image_path)
-    #cv2.imwrite("temp/0-image.jpg", image)
+    cv2.imwrite("temp/0-image.jpg", image)
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    #cv2.imwrite("temp/1-gray.jpg", gray_image)
-    #orc_text = pytesseract.image_to_string(gray_image, lang='rus+eng')
-    #with open("temp/orc_text_base.txt", "w", encoding="utf-8") as file:
-    #    file.write(orc_text)
+    cv2.imwrite("temp/1-gray.jpg", gray_image)
+    orc_text = pytesseract.image_to_string(gray_image, lang='rus+eng')
+    with open("temp/orc_text_base.txt", "w", encoding="utf-8") as file:
+       file.write(orc_text)
     image = gray_image
 
     if bad_image_check(image):
@@ -45,20 +45,20 @@ def preprocess_image(image_path: str) -> np.ndarray:
         #     0,
         #     255,
         #     cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
-        #cv2.imwrite("temp/2-threshold_image.jpg", threshold_image)
+        cv2.imwrite("temp/2-threshold_image.jpg", threshold_image)
         kernel = np.ones((1, 1), np.uint8)
         dilate_image = cv2.dilate(threshold_image, kernel, iterations=1)
-        #cv2.imwrite("temp/3-dilate_image.jpg", dilate_image)
+        cv2.imwrite("temp/3-dilate_image.jpg", dilate_image)
         kernel = np.ones((1, 1), np.uint8)
         erode_image = cv2.erode(dilate_image, kernel, iterations=1)
-        #cv2.imwrite("temp/4-erode_image.jpg", erode_image)
+        cv2.imwrite("temp/4-erode_image.jpg", erode_image)
         morphologyEx_image = cv2.morphologyEx(erode_image, cv2.MORPH_CLOSE, kernel)
-        #cv2.imwrite("temp/5-morphologyEx_image.jpg", morphologyEx_image)
+        cv2.imwrite("temp/5-morphologyEx_image.jpg", morphologyEx_image)
         medianBlur_image = cv2.medianBlur(morphologyEx_image, 1)
-        #cv2.imwrite("temp/6-medianBlur_image.jpg", medianBlur_image)
-        #orc_text = pytesseract.image_to_string(medianBlur_image, lang='rus+eng')
-        #with open("temp/orc_text_with_threshold.txt", "w", encoding="utf-8") as file:
-        #    file.write(orc_text)
+        cv2.imwrite("temp/6-medianBlur_image.jpg", medianBlur_image)
+        orc_text = pytesseract.image_to_string(medianBlur_image, lang='rus+eng')
+        with open("temp/orc_text_with_threshold.txt", "w", encoding="utf-8") as file:
+           file.write(orc_text)
         image = medianBlur_image
 
     text_boxes_image = find_text_boxes(image)
