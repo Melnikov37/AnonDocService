@@ -2,7 +2,7 @@ import cv2
 import pytesseract
 import platform
 from typing import List
-from text_recognizer import extract_lines_from_image
+from text_recognizer import extract_data_from_image
 
 # Проверяем, является ли операционная система Ubuntu
 if platform.system() == 'Linux':
@@ -27,14 +27,15 @@ def anonymize_image(image_path: str, preprocess_image_path: str, words_to_anonym
         raise FileNotFoundError(f"The image at path '{preprocess_image_path}' could not be found.")
 
     #todo: эти данные нужно где-то кешить(слова - координаты слова)
-    data_lines = extract_lines_from_image(image_path)
+    data = extract_data_from_image(image_path)
 
-    # Convert a two-dimensional list to a one-dimensional list
-    data = [line for item in data_lines for line in item]
+    n_boxes = len(data['text'])
 
-    for item in data:
-        word = item['text']
+    for i in range(n_boxes):
+
+        word = data['text'][i]
         if word.lower() in words_to_anonymize:
-            (x, y, w, h) = (item['left'], item['top'], item['width'], item['height'])
+            (x, y, w, h) = (data['left'][i], data['top'][i],
+                            data['width'][i], data['height'][i])
             cv2.rectangle(image, (x, y), (x + w, y + h), (0, 0, 0), -1)
     return image
