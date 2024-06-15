@@ -9,8 +9,7 @@ if platform.system() == 'Linux':
     pytesseract.pytesseract.tesseract_cmd = r'/usr/bin/tesseract'
 
 
-def anonymize_image(image_path: str, preprocess_image_path: str, words_to_anonymize: List[str],
-                    output_path: str) -> None:
+def anonymize_image(image_path: str, preprocess_image_path: str, words_to_anonymize: List[str]):
     """
     Anonymize specified words on the image by covering them with black rectangles.
 

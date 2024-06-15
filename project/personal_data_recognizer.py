@@ -12,13 +12,15 @@ regex_patterns = {
     'SNILS': r'\b\d{3}-\d{3}-\d{3}[- ]?[А-Яа-яA-Za-z0-9]{2}\b',
     'PHONE': r'\+\d{1,3} \(\d{3}\) \d{3}-\d{2}-\d{2}',
     'EMAIL': r'\b[\w\.-]+@[\w\.-]+\.\w{2,4}\b',
-    'DATE': r'\b\d{2}[./-]\d{2}[./-]\d{4}\b'
+    'DATE': r'\b\d{2}[./-]\d{2}[./-]\d{4}\b',
+    'OMS': r'\b\d{16}\b'
 }
 
 context_clues = {
-    'PERSON': ['имя', 'фамилия', 'отчество', 'ф.и.о.', 'фио', 'врач', 'пациент', 'заведующий', 'врач-', 'ф.и.о'],
+    'PERSON': ['имя', 'фамилия', 'отчество', 'ф.и.о.', 'фио', 'врач', 'пациент', 'заведующий', 'врач-', 'ф.и.о', 'пациент'],
     'LOCATION': ['место', 'жительства', 'адрес', 'прописка', 'прописки', 'регистрации', 'прописка','рописка'],
-    'DATE': ['дата рождения', 'родился', 'родилась', 'др', 'день рождения', 'д.р.', 'д.р']
+    'DATE': ['дата рождения', 'родился', 'родилась', 'др', 'день рождения', 'д.р.', 'д.р'],
+    'OMS': ['полис', 'ОМС']
 }
 
 
@@ -59,20 +61,21 @@ def find_personal_data(text, analyzer):
     personal_data_found = []
     token_sentences = preprocess(text)
 
+    prev_str = ""
     for sentence in token_sentences:
-
         if isinstance(sentence, list):
             sentence_str = " ".join(sentence)
         else:
             sentence_str = sentence
 
-        personal_data_found.extend(analyze_text_by_regex(sentence_str))
-        personal_data_found.extend(analyze_by_nlp_engine(analyzer, sentence_str))
+        personal_data_found.extend(analyze_text_by_regex(sentence_str, prev_str))
+        personal_data_found.extend(analyze_by_nlp_engine(analyzer, sentence_str, prev_str))
+        prev_str = sentence_str
 
     return set(split_words_in_array(personal_data_found))
 
 
-def analyze_by_nlp_engine(analyzer, sentence_str):
+def analyze_by_nlp_engine(analyzer, sentence_str, prev_line):
     found_entities = []
     result = analyzer.analyze(text=sentence_str, language='ru', score_threshold=0.9)
 
@@ -84,7 +87,7 @@ def analyze_by_nlp_engine(analyzer, sentence_str):
             found_entities.append(entity)
         else:
             clues = context_clues[entity_type]
-            contextualized_opt = contextualize(clues, entity, sentence_str)
+            contextualized_opt = contextualize(clues, entity, sentence_str, prev_line)
 
             if contextualized_opt is not None:
                 found_entities.append(contextualized_opt)
@@ -92,7 +95,7 @@ def analyze_by_nlp_engine(analyzer, sentence_str):
     return found_entities
 
 
-def contextualize(context_tips, context_element, context):
+def contextualize(context_tips, context_element, context, prev_line):
     """
     Analyze context clues to find matches.
 
@@ -100,6 +103,7 @@ def contextualize(context_tips, context_element, context):
         context_tips (List[str]): List of context clues.
         context_element (str): Element for which it is necessary to check context membership.
         context (str): The context in which to search.
+        prev_line (str): Previous line from document.
 
     Returns:
         Optional[str]: The context element if found, otherwise None.
@@ -108,13 +112,14 @@ def contextualize(context_tips, context_element, context):
 
         if (re.search(rf'{clue.lower()}.{{0,50}}{context_element.lower()}', context.lower())
                 or re.search(rf'{context_element.lower()}.{{0,50}}{clue.lower()}', context.lower())
-                or clue in context_element):
+                or clue in context_element
+                or clue in prev_line):
             return context_element
 
     return None
 
 
-def analyze_text_by_regex(text):
+def analyze_text_by_regex(text, prev_str):
     matches_with_context = []
 
     for pattern_name, pattern in regex_patterns.items():
@@ -127,7 +132,7 @@ def analyze_text_by_regex(text):
         clues = context_clues[pattern_name]
 
         for match in matches:
-            contextualized_match_opt = contextualize(clues, match, text)
+            contextualized_match_opt = contextualize(clues, match, text, prev_str)
 
             if contextualized_match_opt is not None:
                 matches_with_context.append(match)
