@@ -24,7 +24,6 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['ANONYMIZED_FOLDER'] = ANONYMIZED_FOLDER
 
-
 def recognize_text(image_path):
     """ Extracts text from given image.
 
@@ -54,7 +53,8 @@ def find_content_to_anonymize(file_path):
         for page in doc:
             text += page.get_text()
     else:
-        text = text_recognizer.extract_text_from_image(file_path, lang='rus')
+        text_lines = text_recognizer.extract_lines_from_image(file_path, lang='rus')
+        text = text_recognizer.lines_to_text(text_lines)
     personal_data = personal_data_recognizer.find_personal_data(text, analyzer)
     return personal_data
 
@@ -87,7 +87,7 @@ def upload_file():
         print('d')
     else:
         image = image_anonymizer.anonymize_image(file_path, "temp/preprocessed_image.jpg", content_to_anonymize,
-                                                 anonymized_path)
+                                                anonymized_path)
         cv2.imwrite(anonymized_path, image)
 
     # with open(anonymized_path, 'w', encoding='utf-8') as f:
