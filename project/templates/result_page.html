@@ -2,15 +2,35 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Результат анонимизации</title>
+    <title>Результат преобразования картинок</title>
+    <style>
+        .image-container {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        img {
+            max-width: 45%;
+            height: auto;
+        }
+    </style>
 </head>
 <body>
-    <h1>Результат</h1>
-    {% if file_path %}
-    <p>Файл успешно обработан и сохранен: {{ file_path }}</p>
-    <a href="{{ file_path }}" download>Скачать файл</a>
+    <h1>Результат преобразования</h1>
+    <div class="image-container">
+        {% if original_image_path and processed_image_path %}
+        <div>
+            <h2>До</h2>
+            <img src="{{ original_image_path }}" alt="Оригинальное изображение">
+        </div>
+        <div>
+            <h2>После</h2>
+            <img src="{{ processed_image_path }}" alt="Обработанное изображение">
+        </div>
+    </div>
+    <a href="{{ processed_image_path }}" download>Скачать обработанное изображение</a>
     {% else %}
-    <p>Ошибка обработки файла.</p>
+    <p>Ошибка обработки изображений.</p>
     {% endif %}
 </body>
 </html>
