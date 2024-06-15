@@ -5,7 +5,7 @@ from pdf2image import convert_from_path
 
 def convert_pdf_to_jpg(pdf_path, output_folder):
     """Конвертирует PDF файл в изображения JPG, каждая страница становится отдельным файлом."""
-    images = convert_from_path(pdf_path)
+    images = convert_from_path(pdf_path, poppler_path='M:\\poppler-24.02.0\\Library\\bin')
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
     for i, image in enumerate(images):
