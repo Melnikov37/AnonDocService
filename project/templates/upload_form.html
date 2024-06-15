@@ -7,8 +7,15 @@
 <body>
     <h1>Загрузка файла</h1>
     <form action="/upload" method="post" enctype="multipart/form-data">
-        <input type="file" name="file" required>
+        <input type="checkbox" id="test_all" name="test_all">
+        <label for="test_all">Тестировать все файлы</label><br>
+        <input type="file" name="file" id="file_input">
         <button type="submit">Загрузить</button>
     </form>
+    <script>
+        document.getElementById('test_all').addEventListener('change', function() {
+            document.getElementById('file_input').disabled = this.checked;
+        });
+    </script>
 </body>
 </html>

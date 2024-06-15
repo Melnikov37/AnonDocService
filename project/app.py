@@ -9,6 +9,9 @@ from flask import Flask, request, send_file, render_template
 from PIL import Image
 from flask import Flask, send_file, render_template, redirect, url_for, send_from_directory
 from flask import request
+from flask import Flask, send_file, render_template, redirect, url_for, send_from_directory
+from flask import request
+from pytesseract import pytesseract
 
 import image_anonymizer
 import personal_data_recognizer
@@ -166,7 +169,6 @@ def process_pdf(file_path, content_to_anonymize, pdf_to_jpg_folder):
     finally:
         clean_directory(pdf_to_jpg_folder)
 
-
 def clean_directory(directory):
     """Remove all files in the specified directory."""
 
@@ -181,5 +183,8 @@ def clean_directory(directory):
         except Exception as e:
             print(f'Failed to delete {file_path}. Reason: {e}')
 
+        # Преобразовать в JPG
+        print('PDF file processing not implemented')
+        
 if __name__ == '__main__':
     app.run(debug=True)
