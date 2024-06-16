@@ -5,10 +5,7 @@ import shutil
 
 import cv2
 import fitz  # PyMuPDF
-from flask import Flask, request, send_file, render_template
 from PIL import Image
-from flask import Flask, send_file, render_template, redirect, url_for, send_from_directory
-from flask import request
 from flask import Flask, send_file, render_template, redirect, url_for, send_from_directory
 from flask import request
 from pytesseract import pytesseract
@@ -18,6 +15,23 @@ import personal_data_recognizer
 import text_recognizer
 import format_converter as converter
 import zipfile
+import nltk
+
+try:
+    nltk.download('stopwords', download_dir='/root/nltk_data')
+except Exception as e:
+    print(f"Failed to download: {e}")
+
+try:
+    nltk.download('wordnet', download_dir='/root/nltk_data')
+except Exception as e:
+    print(f"Failed to download: {e}")
+
+try:
+    nltk.download('punkt', download_dir='/root/nltk_data')
+except Exception as e:
+    print(f"Failed to download: {e}")
+
 
 # Directory setup for file uploads and anonymized results
 UPLOAD_FOLDER = 'uploads/'
@@ -107,9 +121,13 @@ def index():
 @app.route('/results/<filename>')
 def results(filename):
     """Отображает страницу с результатами обработки."""
-    original_image_path = os.path.join('/uploads', filename)
-    processed_image_path = os.path.join('/anonymized', filename)
-    return render_template('/result_page.html', original_image_path=original_image_path, processed_image_path=processed_image_path)
+    if filename.lower().endswith('.pdf'):
+        original_pdf_path = os.path.join(app.config['ANONYMIZED_FOLDER'], f'{os.path.splitext(filename)[0]}.zip')
+        return send_file(original_pdf_path, as_attachment=True)
+    else:
+        original_image_path = os.path.join('/uploads', filename)
+        processed_image_path = os.path.join('/anonymized', filename)
+        return render_template('/result_page.html', original_image_path=original_image_path, processed_image_path=processed_image_path)
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -139,7 +157,7 @@ def process_and_anonymize_file(file_path, filename):
     anonymized_path = os.path.join(app.config['ANONYMIZED_FOLDER'], filename)
     if file_path.lower().endswith('.pdf'):
         # преобразовать в JPG
-       anonymized_path = process_pdf(file_path, content_to_anonymize, app.config['PDF_2_JPG_FOLDER'])
+        anonymized_path = process_pdf(file_path, content_to_anonymize, app.config['PDF_2_JPG_FOLDER'])
     else:
         image = image_anonymizer.anonymize_image(file_path, "temp/preprocessed_image.jpg", content_to_anonymize)
         cv2.imwrite(anonymized_path, image)

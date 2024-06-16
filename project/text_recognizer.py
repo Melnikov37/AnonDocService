@@ -12,7 +12,7 @@ if platform.system() == 'Linux':
     pytesseract.pytesseract.tesseract_cmd = r'/usr/bin/tesseract'
 
 TEMP_FOLDER = 'temp/'
-LOG_ON = True
+LOG_ON = False
 
 os.makedirs(TEMP_FOLDER, exist_ok=True)
 
