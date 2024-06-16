@@ -35,6 +35,7 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['ANONYMIZED_FOLDER'] = ANONYMIZED_FOLDER
 app.config['PDF_2_JPG_FOLDER'] = PDF_TO_JPG_FOLDER
+app.config['TEMP_FOLDER'] = TEMP_FOLDER
 
 def recognize_text(image_path):
     """ Extracts text from given image.
@@ -69,8 +70,9 @@ def find_content_to_anonymize(file_path):
     personal_data = personal_data_recognizer.find_personal_data(text, analyzer)
     return personal_data
 
-def zip_anonymized_images(images):
-    zip_filename = "anonymized_images.zip"
+def zip_anonymized_images(images, pdf_path):
+    filename = os.path.splitext(os.path.basename(pdf_path))[0]
+    zip_filename = f'{filename}.zip'
     zip_filepath = os.path.join(app.config['ANONYMIZED_FOLDER'], zip_filename)
 
     with zipfile.ZipFile(zip_filepath, 'w') as zipf:
@@ -165,7 +167,7 @@ def process_pdf(file_path, content_to_anonymize, pdf_to_jpg_folder):
             processed_images.append(processed_image)
 
         # Zip the anonymized images and return the zip path
-        return zip_anonymized_images(processed_images)
+        return zip_anonymized_images(processed_images, file_path)
     finally:
         clean_directory(pdf_to_jpg_folder)
 
@@ -183,8 +185,5 @@ def clean_directory(directory):
         except Exception as e:
             print(f'Failed to delete {file_path}. Reason: {e}')
 
-        # Преобразовать в JPG
-        print('PDF file processing not implemented')
-        
 if __name__ == '__main__':
     app.run(debug=True)
