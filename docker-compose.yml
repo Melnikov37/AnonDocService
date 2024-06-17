@@ -10,6 +10,7 @@ services:
         python3 -m venv env &&
         source env/bin/activate &&
         pip3 install --upgrade pip &&
+        pip3 install numpy==1.26.4 &&
         pip3 install -r /app/requirements.txt &&
         pip3 install --force git+https://github.com/pydantic/pydantic.git@464ed49b1f813103a49116476bec75a94492b338 &&
         pip3 install gunicorn &&
